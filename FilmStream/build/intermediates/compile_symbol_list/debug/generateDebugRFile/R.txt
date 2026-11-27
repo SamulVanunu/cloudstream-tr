@@ -1,3 +1,0 @@
-int drawable ic_android_24dp 0x0
-int string hello_fragment 0x0
-int string loaded_from_app_trans 0x0
