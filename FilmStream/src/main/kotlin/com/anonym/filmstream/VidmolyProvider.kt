@@ -60,11 +60,26 @@ class VidmolyProvider : MainAPI() {
     override suspend fun search(query: String): List<SearchResponse> {
         val q = query.trim()
         if (q.length < 2) return emptyList()
-        val document = app.get("$mainUrl?s=${URLEncoder.encode(q, "UTF-8")}").document
-        return document.select("div.poster-container.moviebox-item").mapNotNull { it.toSearch() }
+        val sonuc = mutableListOf<SearchResponse>()
+        try {
+            val document = app.get("$mainUrl?s=${URLEncoder.encode(q, "UTF-8")}").document
+            document.select("div.poster-container.moviebox-item").mapNotNull { it.toSearch() }
+                .let { sonuc.addAll(it) }
+        } catch (e: Exception) { /* site arama kapaliysa yerel indeks devreye girer */ }
+        // filmdozu /ara?q= Cloudflare 403 oldugu icin dogrulanmis yerel indeks
+        VidmolyData.entries.filter { it.ad.contains(q, true) }.take(40).forEach { e ->
+            sonuc.add(newMovieSearchResponse(e.ad, e.embed, TvType.Movie) { this.posterUrl = e.poster })
+        }
+        return sonuc.distinctBy { it.url }
     }
 
     override suspend fun load(url: String): LoadResponse? {
+        if (url.contains("vidmoly.net/embed-", true)) {
+            val entry = VidmolyData.entries.firstOrNull { it.embed == url }
+            return newMovieLoadResponse(entry?.ad ?: "Film", url, TvType.Movie, url) {
+                this.posterUrl = entry?.poster
+            }
+        }
         val document = app.get(url).document
         val baslik = document.selectFirst("h1.movie-title")?.text()?.trim()
             ?: document.selectFirst("h1")?.text()?.trim() ?: return null
