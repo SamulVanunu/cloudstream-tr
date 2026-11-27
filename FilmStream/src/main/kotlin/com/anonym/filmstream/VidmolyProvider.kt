@@ -23,7 +23,9 @@ class VidmolyProvider : MainAPI() {
     private fun baslik(e: VidmolyEntry) = e.ad.replace(adTemizle, "").trim().ifBlank { e.ad }
 
     private fun VidmolyEntry.toSearch(): MovieSearchResponse =
-        newMovieSearchResponse(baslik(this), embed, TvType.Movie)
+        newMovieSearchResponse(baslik(this), embed, TvType.Movie) {
+            this.posterUrl = poster.takeIf { it.startsWith("http") }
+        }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val filtre = VidmolyData.entries.filter { e ->
