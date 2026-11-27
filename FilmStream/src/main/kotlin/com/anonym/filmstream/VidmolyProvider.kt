@@ -2,6 +2,7 @@ package com.anonym.filmstream
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import org.jsoup.nodes.Element
 import java.net.URLEncoder
 
@@ -25,9 +26,15 @@ class VidmolyProvider : MainAPI() {
     override var lang = "tr"
     override val hasMainPage = true
     override val mainPage = mainPageOf(
-        "$mainUrl/yerli-film/" to "Yerli Filmler",
+        "$mainUrl/"              to "Yeni Eklenenler",
+        "$mainUrl/vizyon/"       to "Filmler",
+        "$mainUrl/netflix-dizileri/" to "Diziler",
+        "$mainUrl/yerli-film/"   to "Yerli Filmler",
         "$mainUrl/turkce-dublaj/" to "Türkçe Dublaj",
-        "$mainUrl/turkce-altyazili/" to "Türkçe Altyazılı"
+        "$mainUrl/aksiyon/"      to "Aksiyon",
+        "$mainUrl/komedi/"       to "Komedi",
+        "$mainUrl/dram/"         to "Dram",
+        "$mainUrl/bilim-kurgu/"  to "Bilim Kurgu"
     )
 
     private val embedRegex = Regex("""(?:https?:)?//[^\s"']*?(?:vidmoly\.net/embed-[a-z0-9]+|ok\.ru/videoembed/\d+|dailymotion\.com/embed/video/[a-z0-9]+)[^\s"'<]*""", RegexOption.IGNORE_CASE)
@@ -43,18 +50,27 @@ class VidmolyProvider : MainAPI() {
         val poster = fixUrlNull(
             img?.attr("data-src")?.ifBlank { null }
                 ?: img?.attr("data-lazy-src")?.ifBlank { null }
-                ?: img?.attr("src")
+                ?: img?.attr("src")?.takeIf { !it.startsWith("data:") }
+                ?: img?.attr("data-srcset")?.split(",")?.firstOrNull()?.trim()?.split(" ")?.firstOrNull()
         )
         return newMovieSearchResponse(baslik, href, TvType.Movie) {
             this.posterUrl = poster
+            this.posterHeaders = mapOf("Referer" to "$mainUrl/")
         }
     }
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val adres = if (page <= 1) request.data else "${request.data}page/$page/"
-        val document = app.get(adres).document
-        val liste = document.select("div.poster-container.moviebox-item").mapNotNull { it.toSearch() }
-        return newHomePageResponse(request.name, liste)
+        val ilk = app.get(adres)
+        var document = ilk.document
+        if (document.select("div.poster-container.moviebox-item").isEmpty()) {
+            // Cloudflare 403 / bos sayfa: dokümandaki interceptor ile tekrar dene
+            document = app.get(adres, interceptor = CloudflareKiller()).document
+        }
+        val liste = document.select("div.poster-container.moviebox-item")
+            .mapNotNull { it.toSearch() }
+            .distinctBy { it.url }
+        return newHomePageResponse(request.name, liste, hasNext = true)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
