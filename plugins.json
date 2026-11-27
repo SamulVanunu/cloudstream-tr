@@ -1,0 +1,23 @@
+[
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Korduene_Logo.png",
+        "fileHash": "sha256-147143d2d16226acfbf8b683840e51bceffbc6345803ee2b6728a29ff2810fca",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/SamulVanunu/cloudstream-tr",
+        "fileSize": 42516,
+        "status": 3,
+        "language": "tr",
+        "authors": [
+            "anonym"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "version": 1,
+        "internalName": "FilmStream",
+        "description": "Film/dizi: vidmoly (filmdozu + lovefilmizle) ve 142 site deneyicisi",
+        "url": "https://raw.githubusercontent.com/SamulVanunu/cloudstream-tr/builds/FilmStream.cs3",
+        "name": "FilmStream"
+    }
+]

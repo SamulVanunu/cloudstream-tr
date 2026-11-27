@@ -7,7 +7,7 @@ import com.lagradost.cloudstream3.utils.*
  *  Baglantilar cihaz IP'sinde cozulur; token baska IP'de calismadigi icin
  *  URL saklanmaz, her oynatmada embed sayfasi yeniden okunur. */
 class VidmolyProvider : MainAPI() {
-    override var mainUrl = "https://filmdozu.com"
+    override var mainUrl = "https://lovefilmizle.net"
     override var name = "Filmdozu + Lovefilm (Vidmoly)"
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
     override var lang = "tr"

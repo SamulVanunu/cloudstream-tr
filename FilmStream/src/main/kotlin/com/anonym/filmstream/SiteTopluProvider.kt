@@ -7,7 +7,7 @@ import com.lagradost.cloudstream3.utils.*
  *  Ölü / ISP engelli / Cloudflare 403 siteler boş sonuç veya hata verir;
  *  çalışan sitelerde doğrudan m3u8/mp4 veya vidmoly embed aranır. */
 class SiteTopluProvider : MainAPI() {
-    override var mainUrl = "https://filmdozu.com"
+    override var mainUrl = "https://siteler.local"
     override var name = "Toplu Siteler (142)"
     override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
     override var lang = "tr"
