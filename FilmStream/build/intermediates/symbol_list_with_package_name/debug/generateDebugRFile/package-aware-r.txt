@@ -1,0 +1,4 @@
+com.example
+drawable ic_android_24dp
+string hello_fragment
+string loaded_from_app_trans

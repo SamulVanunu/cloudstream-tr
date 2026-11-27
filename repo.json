@@ -1,0 +1,8 @@
+{
+  "name": "ANON Film/Dizi",
+  "description": "Kişisel film/dizi eklentisi: vidmoly ve 142 site deneyicisi",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/SamulVanunu/cloudstream-tr/builds/plugins.json"
+  ]
+}
